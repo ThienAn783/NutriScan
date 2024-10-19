@@ -41,3 +41,30 @@ def search_user_input():
             st.markdown(f"[{link_text}]({search_url})")
 
 search_user_input()
+
+def calculate_daily_total_fat(daily_calories):
+    st.write((daily_calories * 0.30) / 9 + " g")
+
+def calculate_daily_saturated_fat(daily_calories):
+    st.write((daily_calories * 0.6) / 9 + " g")
+
+def calculate_daily_trans_fat(daily_calories):
+    st.write((daily_calories * 0.01) / 9 + " g")
+
+def calculate_daily_cholesterol():
+    st.write(300 + " mg")
+
+def calculate_daily_sodium():
+    st.write(2300 + " mg")
+
+def calculate_daily_total_carbohydrates(daily_calories):
+    st.write((daily_calories * 0.50) / 4 + " mg")
+
+def calculate_dietary_fiber():
+    st.write(27.5 + " g")
+
+def calculate_total_sugars(daily_calories):
+    st.write((daily_calories * 0.05) / 4 + " g")
+
+def calculate_total_protein(body_weight):
+    st.write(body_weight * 0.8 + " g")
