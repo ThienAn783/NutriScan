@@ -1,148 +1,149 @@
-# app.py
-
+import altair as alt
+import pandas as pd
 import streamlit as st
 import requests
 from PIL import Image
+import io
 import os
 
-# Set your Foodvisor API Key
-FOODVISOR_API_KEY = os.getenv('FOODVISOR_API_KEY')  # Recommended to use environment variables
+# Show the page title and description.
+st.set_page_config(page_title="Food", page_icon="🎬")
+st.title("FOOD")
 
-if not FOODVISOR_API_KEY:
-    st.error("API key not found. Please set the FOODVISOR_API_KEY environment variable.")
-else:
-    # Title
-    st.title("Calorie Tracker App")
+API_KEY = os.getenv('FOODVISOR_API_KEY')
+SERPAPI_API_KEY = os.getenv('SERPAPI_API_KEY')
+    
+if not API_KEY:
+    raise ValueError("FOODVISOR_API_KEY environment variable not set.")
+if not SERPAPI_API_KEY:
+    raise ValueError("SERPAPI_API_KEY environment variable not set.")
 
-    # Initialize session state
-    if 'food_log' not in st.session_state:
-        st.session_state.food_log = []
 
-    # Image upload
-    uploaded_file = st.file_uploader("Upload an image of your food", type=["jpg", "jpeg", "png"])
+def format_number(value):
+    if value is not None:
+        formatted = f"{value:.10f}"
+        return f"{formatted.rstrip('0').rstrip('.')}"
+    else:
+        value = '0'
+        return value
 
-    # Function to call Foodvisor API
-    def get_nutrition_info(image_bytes):
-        url = "https://vision.foodvisor.io/api/1.0/en/analysis/"
-        headers = {
-            "Authorization": f"Api-Key s4KvFyQy.f1GvtvWfS2WvwpnalDP5zSTnRdG9xH6k"
-        }
-        files = {
-            "image": ("image.jpg", image_bytes, "image/jpeg")
-        }
+# File uploader for the user to upload an image
+uploaded_file = st.file_uploader("Upload an image of your food", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is not None:
+    # Read the image file
+    image_bytes = uploaded_file.read()
+
+    # Determine the MIME type
+    filename = uploaded_file.name
+    if filename.lower().endswith('.jpg') or filename.lower().endswith('.jpeg'):
+        mime_type = 'image/jpeg'
+    elif filename.lower().endswith('.png'):
+        mime_type = 'image/png'
+    else:
+        st.error("Unsupported file type. Please upload a JPG or PNG image.")
+        st.stop()
+
+    # Display the uploaded image
+    image = Image.open(io.BytesIO(image_bytes))
+    st.image(image, caption='Uploaded Food Image', use_column_width=True)
+
+    # Prepare and send the request to the Foodvisor API
+    url = "https://vision.foodvisor.io/api/1.0/en/analysis/"
+    headers = {"Authorization": "Api-Key " + API_KEY}
+    files = {
+        "image": (filename, image_bytes, mime_type)
+    }
+
+    with st.spinner('Analyzing image...'):
         response = requests.post(url, headers=headers, files=files)
-        
         try:
-            response.raise_for_status()  # Raises HTTPError for bad responses (4XX or 5XX)
-            return response.json()
+            response.raise_for_status()
+            data = response.json()
         except requests.exceptions.HTTPError as http_err:
             st.error(f"HTTP error occurred: {http_err}")
             st.write(response.text)
-        except requests.exceptions.RequestException as err:
+            st.stop()
+        except Exception as err:
             st.error(f"An error occurred: {err}")
-        except ValueError:
-            st.error("Invalid JSON received from the API.")
-            st.write(response.text)
-        return None
+            st.stop()
 
-    if uploaded_file is not None:
-        # Display the uploaded image
-        image = Image.open(uploaded_file)
-        st.image(image, caption='Uploaded Image', use_column_width=True)
-        
-        # Convert image to bytes
-        img_bytes = uploaded_file.read()
+    # Check if any items were detected
+    items = data.get('items')
+    if not items:
+        st.error("No food items detected in the image.")
+        st.stop()
 
-        # Get nutrition info
-        with st.spinner('Analyzing image...'):
-            result = get_nutrition_info(img_bytes)
+    # Extract data from the API response
+    try:
+        display_name = data["items"][0]["food"][0]["food_info"]["display_name"]
+        nutrition = data["items"][0]["food"][0]["food_info"]["nutrition"]
+    except (IndexError, KeyError):
+        st.error("Unexpected response structure from the API.")
+        st.write(data)  # Optionally display the raw data for debugging
+        st.stop()
 
-        if result:
-            st.success('Analysis complete!')
-            st.header("Nutrition Information")
-            
-            # Access the 'items' key from the response
-            items = result.get('items', [])
-            
-            if items:
-                for idx, item in enumerate(items):
-                    # Each item may contain multiple food options
-                    foods = item.get('food', [])
-                    for food in foods:
-                        # Get food information
-                        food_info = food.get('food_info', {})
-                        food_name = food_info.get('display_name', 'Unknown')
-                        nutrition = food_info.get('nutrition', {})
-                        
-                        st.subheader(f"Detected Food {idx + 1}: {food_name}")
-                        
-                        # Display nutrition details
-                        st.write("**Nutrition Details (per 100g):**")
-                        for nutrient, value in nutrition.items():
-                            if value is not None:
-                                nutrient_name = nutrient.replace('_100g', '').replace('_', ' ').capitalize()
-                                st.write(f"- {nutrient_name}: {value}")
-                        
-                        # Log the food
-                        st.session_state.food_log.append({
-                            'food_name': food_name,
-                            'nutrition': nutrition
-                        })
+    st.success('Analysis complete!')
+
+    # Display the nutritional information
+    with st.expander("Nutritional Information"):
+        st.write(f"**Food Item:** {display_name}")
+        st.write("**Serving Size:** 100 g")
+        st.write(f"**Calories:** {format_number(nutrition.get('calories_100g'))} kcal")
+        st.write(f"**Total Fat:** {format_number(nutrition.get('fat_100g'))} g")
+        st.write(f"  - **Saturated Fat:** {format_number(nutrition.get('sat_fat_100g'))} g")
+        st.write(f"**Cholesterol:** {format_number(nutrition.get('cholesterol_100g'))} mg")
+        st.write(f"**Sodium:** {format_number(nutrition.get('sodium_100g'))} mg")
+        st.write(f"**Total Carbohydrates:** {format_number(nutrition.get('carbs_100g'))} g")
+        st.write(f"  - **Dietary Fiber:** {format_number(nutrition.get('fibers_100g'))} g")
+        st.write(f"  - **Sugars:** {format_number(nutrition.get('sugars_100g'))} g")
+        st.write(f"**Protein:** {format_number(nutrition.get('proteins_100g'))} g")
+        if st.checkbox("Expand to see Vitamins"):
+            st.write(f"**Vitamin A:** {format_number(nutrition.get('vitamin_a_retinol_100g'))} µg")
+            st.write(f"**Vitamin C:** {format_number(nutrition.get('vitamin_c_100g'))} mg")
+            st.write(f"**Vitamin D:** {format_number(nutrition.get('vitamin_d_100g'))} µg")
+            st.write(f"**Vitamin B12:** {format_number(nutrition.get('vitamin_b12_100g'))} µg")
+        if st.checkbox("Expand to see Minerals"):
+            st.write(f"**Calcium:** {format_number(nutrition.get('calcium_100g'))} mg")
+            st.write(f"**Iron:** {format_number(nutrition.get('iron_100g'))} mg")
+            st.write(f"**Potassium:** {format_number(nutrition.get('potassium_100g'))} mg")
+
+    # Function for taking in user input and searching it on the web
+    def search_user_input():
+        user_input = st.text_input("What would you like to know about this food?", "")
+
+        if user_input:
+            query = display_name + " " + user_input
+
+            params = {
+                "q": query,
+                "location": "United States",
+                "hl": "en",
+                "gl": "us",
+                "api_key": SERPAPI_API_KEY
+            }
+
+            response = requests.get('https://serpapi.com/search', params=params)
+            try:
+                response.raise_for_status()
+                results = response.json()
+            except requests.exceptions.HTTPError as http_err:
+                st.error(f"HTTP error occurred: {http_err}")
+                st.write(response.text)
+                return
+            except Exception as err:
+                st.error(f"An error occurred: {err}")
+                return
+
+            if "organic_results" in results:
+                for result in results["organic_results"]:
+                    title = result.get("title")
+                    link = result.get("link")
+                    if title and link:
+                        st.markdown(f"[{title}]({link})")
             else:
-                st.warning("No food items detected in the image.")
-        else:
-            st.error("Failed to retrieve nutrition information.")
+                st.write("No results found.")
 
-    # Display daily intake
-    if st.session_state.food_log:
-        st.header("Today's Food Intake")
-        total_calories = 0
-
-        for idx, entry in enumerate(st.session_state.food_log):
-            st.write(f"**{idx + 1}. {entry['food_name']}**")
-            nutrition = entry['nutrition']
-            for nutrient, value in nutrition.items():
-                if value is not None:
-                    nutrient_name = nutrient.replace('_100g', '').replace('_', ' ').capitalize()
-                    st.write(f"- {nutrient_name}: {value}")
-                    if nutrient == 'calories_100g':
-                        total_calories += float(value)
-        st.write(f"**Total Calories Consumed:** {total_calories} kcal")
-    else:
-        st.write("No food items logged yet.")
-
-    # Daily calorie recommendation
-    st.header("Daily Calorie Recommendation")
-
-    age = st.number_input("Enter your age:", min_value=1, max_value=120, value=25)
-    gender = st.selectbox("Select your gender:", options=["Male", "Female"])
-    weight = st.number_input("Enter your weight (kg):", min_value=1.0, max_value=300.0, value=70.0)
-    height = st.number_input("Enter your height (cm):", min_value=50.0, max_value=250.0, value=170.0)
-    activity_level = st.selectbox("Select your activity level:", options=[
-        "Sedentary (little or no exercise)",
-        "Lightly active (light exercise/sports 1-3 days/week)",
-        "Moderately active (moderate exercise/sports 3-5 days/week)",
-        "Very active (hard exercise/sports 6-7 days a week)",
-        "Extra active (very hard exercise/sports & physical job)"
-    ])
-
-    def calculate_bmr(gender, weight, height, age):
-        if gender == "Male":
-            return 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
-        else:
-            return 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
-
-    def calculate_daily_calories(bmr, activity_level):
-        activity_multipliers = {
-            "Sedentary (little or no exercise)": 1.2,
-            "Lightly active (light exercise/sports 1-3 days/week)": 1.375,
-            "Moderately active (moderate exercise/sports 3-5 days/week)": 1.55,
-            "Very active (hard exercise/sports 6-7 days a week)": 1.725,
-            "Extra active (very hard exercise/sports & physical job)": 1.9
-        }
-        return bmr * activity_multipliers[activity_level]
-
-    if st.button("Calculate Recommended Daily Calories"):
-        bmr = calculate_bmr(gender, weight, height, age)
-        daily_calories = calculate_daily_calories(bmr, activity_level)
-        st.write(f"**Your Recommended Daily Calorie Intake:** {daily_calories:.2f} kcal")
+    search_user_input()
+else:
+    st.info("Please upload an image of your food to get started.")
