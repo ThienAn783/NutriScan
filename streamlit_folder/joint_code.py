@@ -9,7 +9,7 @@ st.set_page_config(page_title="Food", page_icon="🎬")
 st.title("FOOD")
 import requests
 
-API_KEY = 'n8DXzZmNroJ4Wew6OkGKwoubDTdsee7VlSPY5huK'
+API_KEY = 's4KvFyQy.f1GvtvWfS2WvwpnalDP5zSTnRdG9xH6k'
 def format_number(value):
     if value is not None:
         formatted = f"{value:.10f}"
@@ -19,7 +19,7 @@ def format_number(value):
         return value
 #accessing api for food vision
 url = "https://vision.foodvisor.io/api/1.0/en/analysis/"
-headers = {"Authorization": "Api-Key t0tXlgF3.lJFuSecTKimVxvGYqlgIPULTfzV1QyAz"}
+headers = {"Authorization": "Api-Key " + API_KEY}
 with open("food.jpg", "rb") as image:
   response = requests.post(url, headers=headers, files={"image": image})
   response.raise_for_status()
