@@ -5,36 +5,39 @@ from serpapi import GoogleSearch
 # Title for the chatbot
 st.title("Simple Chatbot")
 
-user_input = st.text_input("You: ", "")
+food_url = "https://vision.foodvisor.io/api/1.0/en/analysis/"
+headers = {"Authorization": "Api-Key s4KvFyQy.f1GvtvWfS2WvwpnalDP5zSTnRdG9xH6k"}
+with open("food.jpg", "rb") as image:
+    response = requests.post(food_url, headers=headers, files={"image": image})
+    response.raise_for_status()
+data = response.json()
 
-if user_input:
-    url = "https://vision.foodvisor.io/api/1.0/en/analysis/"
-    headers = {"Authorization": "Api-Key t0tXlgF3.lJFuSecTKimVxvGYqlgIPULTfzV1QyAz"}
-    with open("food.jpg", "rb") as image:
-        response = requests.post(url, headers=headers, files={"image": image})
-        response.raise_for_status()
-    data = response.json()
+display_name = data["items"][0]["food"][0]["food_info"]["display_name"]
+st.write(display_name)
+nutrition = data["items"][0]["food"][0]["food_info"]["nutrition"]
+# st.write(nutrition)
 
-    display_name = data["items"][0]["food"][0]["food_info"]["display_name"]
-    st.write(display_name)
-    nutrition = data["items"][0]["food"][0]["food_info"]["nutrition"]
-    # st.write(nutrition)
+def search_user_input():
+    user_input = st.text_input("You: ", "")
 
-    user_message = user_input.lower()
+    if user_input:
+        user_message = user_input.lower()
 
-    params = {
-    "q": display_name + " healthy recipe",
-    "location": "United States",
-    "hl": "en",
-    "gl": "us",
-    "api_key": "5312ce5c5c97a3ff70fe04fcf1e49d7e38039018892ceec45dbb0798c200137a"
-    }
+        params = {
+        "q": display_name + user_message,
+        "location": "United States",
+        "hl": "en",
+        "gl": "us",
+        "api_key": "5312ce5c5c97a3ff70fe04fcf1e49d7e38039018892ceec45dbb0798c200137a"
+        }
 
-    search = GoogleSearch(params)
-    results = search.get_dict()
-    for result in results["organic_results"]:
-        title = result["title"]
-        link = result["link"]
-        link_text = title
-        url = link
-        st.markdown(f"[{link_text}]({url})")
+        search = GoogleSearch(params)
+        results = search.get_dict()
+        for result in results["organic_results"]:
+            title = result["title"]
+            link = result["link"]
+            link_text = title
+            search_url = link
+            st.markdown(f"[{link_text}]({search_url})")
+
+search_user_input()
