@@ -1,8 +1,8 @@
 import altair as alt
 import pandas as pd
 import streamlit as st
-import requests 
-
+import requests
+from serpapi import GoogleSearch
 
 # Show the page title and description.
 st.set_page_config(page_title="Food", page_icon="🎬")
