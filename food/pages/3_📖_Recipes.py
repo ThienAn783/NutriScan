@@ -7,7 +7,8 @@ from utils import format_number
 
 st.title("Recipes 📖")
 
-SERPAPI_API_KEY = os.getenv('SERPAPI_API_KEY')
+# SERPAPI_API_KEY = os.getenv('SERPAPI_API_KEY')
+SERPAPI_API_KEY = 5312ce5c5c97a3ff70fe04fcf1e49d7e38039018892ceec45dbb0798c200137a
 
 if not SERPAPI_API_KEY:
     st.error("SERPAPI_API_KEY environment variable not set.")
