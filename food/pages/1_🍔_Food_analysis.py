@@ -11,7 +11,7 @@ import random
 load_dotenv()
 
 # Set your OpenAI API key (replace with your own API key)
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+client = OpenAI(api_key=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)
 
 # Alternatively, if you want to hard-code the API key (not recommended for production):
 # openai.api_key = 'your-openai-api-key'
