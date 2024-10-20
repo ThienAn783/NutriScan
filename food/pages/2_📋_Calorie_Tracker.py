@@ -1,6 +1,5 @@
-# pages/2_Calorie_Tracker.py
-
 import streamlit as st
+import pandas as pd
 from utils import format_number
 
 st.set_page_config(
@@ -11,48 +10,57 @@ st.set_page_config(
 
 st.title("Calorie Tracker 📋")
 
-# Check if total nutritional sums are available from Page 1
+# Initialize session state for meals if not already initialized
+if 'meals' not in st.session_state:
+    st.session_state['meals'] = []
+
+# Check if nutritional data exists from the Food Analysis page
 if 'calorie_sum' in st.session_state:
-    # Retrieve the total nutritional values from session state
-    calorie_sum = st.session_state['calorie_sum']
-    fat_sum = st.session_state['fat_sum']
-    cholesterol_sum = st.session_state['cholesterol_sum']
-    sodium_sum = st.session_state['sodium_sum']
-    carbs_sum = st.session_state['carbs_sum']
-    fiber_sum = st.session_state['fiber_sum']
-    sugars_sum = st.session_state['sugars_sum']
-    protein_sum = st.session_state['protein_sum']
-    vitamin_a_sum = st.session_state['vitamin_a_sum']
-    vitamin_c_sum = st.session_state['vitamin_c_sum']
-    vitamin_d_sum = st.session_state['vitamin_d_sum']
-    vitamin_b12_sum = st.session_state['vitamin_b12_sum']
-    calcium_sum = st.session_state['calcium_sum']
-    iron_sum = st.session_state['iron_sum']
-    potassium_sum = st.session_state['potassium_sum']
+    # Create a meal data dictionary with the current analyzed nutritional information
+    meal_data = {
+        'Meal': f'Meal {len(st.session_state["meals"]) + 1}',  # Unique meal name based on the current count
+        'Calories': st.session_state['calorie_sum'],  # Total calories for this meal
+        'Fat': st.session_state['fat_sum'],
+        'Cholesterol': st.session_state['cholesterol_sum'],
+        'Sodium': st.session_state['sodium_sum'],
+        'Carbohydrates': st.session_state['carbs_sum'],
+        'Fiber': st.session_state['fiber_sum'],
+        'Sugars': st.session_state['sugars_sum'],
+        'Protein': st.session_state['protein_sum'],
+        'Eaten': False  # Default to False, meal not eaten yet
+    }
 
-    # Display a summary of the total nutrition for all analyzed foods
-    st.subheader("Total Nutritional Information for the Day")
+    # Avoid duplicating the same meal if already added
+    if not st.session_state['meals'] or st.session_state['meals'][-1]['Calories'] != meal_data['Calories']:
+        st.session_state['meals'].append(meal_data)
 
-    # Display the totals in an expander or directly
-    with st.expander("Nutritional Information", expanded=True):
-        st.write(f"**Total Calories:** {format_number(calorie_sum)} kcal")
-        st.write(f"**Total Fat:** {format_number(fat_sum)} g")
-        st.write(f"**Total Cholesterol:** {format_number(cholesterol_sum)} mg")
-        st.write(f"**Total Sodium:** {format_number(sodium_sum)} mg")
-        st.write(f"**Total Carbohydrates:** {format_number(carbs_sum)} g")
-        st.write(f"**Total Dietary Fiber:** {format_number(fiber_sum)} g")
-        st.write(f"**Total Sugars:** {format_number(sugars_sum)} g")
-        st.write(f"**Total Protein:** {format_number(protein_sum)} g")
-        st.write(f"**Total Vitamin A:** {format_number(vitamin_a_sum)} µg")
-        st.write(f"**Total Vitamin C:** {format_number(vitamin_c_sum)} mg")
-        st.write(f"**Total Vitamin D:** {format_number(vitamin_d_sum)} µg")
-        st.write(f"**Total Vitamin B12:** {format_number(vitamin_b12_sum)} µg")
-        st.write(f"**Total Calcium:** {format_number(calcium_sum)} mg")
-        st.write(f"**Total Iron:** {format_number(iron_sum)} mg")
-        st.write(f"**Total Potassium:** {format_number(potassium_sum)} mg")
+# Create a DataFrame to display the meals
+df = pd.DataFrame(st.session_state['meals'])
 
-    if st.button("Add information to your nutrition log"):
-        st.session_state.nutrition_info = {}
+# Display table with meal data and checkboxes for "Eaten"
+st.subheader("Your Meals")
+for index, meal in df.iterrows():
+    # Checkbox for each meal to mark whether it was eaten or not
+    eaten = st.checkbox(f"{meal['Meal']}: {format_number(meal['Calories'])} kcal", key=f"eaten_{index}")
+    st.session_state['meals'][index]['Eaten'] = eaten
 
-else:
-    st.info("Please analyze food items on the 'Food Analysis' page first.")
+# Calculate the total nutrition from eaten meals
+total_calories = sum(meal['Calories'] for meal in st.session_state['meals'] if meal['Eaten'])
+total_fat = sum(meal['Fat'] for meal in st.session_state['meals'] if meal['Eaten'])
+total_cholesterol = sum(meal['Cholesterol'] for meal in st.session_state['meals'] if meal['Eaten'])
+total_sodium = sum(meal['Sodium'] for meal in st.session_state['meals'] if meal['Eaten'])
+total_carbs = sum(meal['Carbohydrates'] for meal in st.session_state['meals'] if meal['Eaten'])
+total_fiber = sum(meal['Fiber'] for meal in st.session_state['meals'] if meal['Eaten'])
+total_sugars = sum(meal['Sugars'] for meal in st.session_state['meals'] if meal['Eaten'])
+total_protein = sum(meal['Protein'] for meal in st.session_state['meals'] if meal['Eaten'])
+
+# Display the total sum
+st.subheader("Total Nutritional Information from Eaten Meals")
+st.write(f"**Total Calories:** {format_number(total_calories)} kcal")
+st.write(f"**Total Fat:** {format_number(total_fat)} g")
+st.write(f"**Total Cholesterol:** {format_number(total_cholesterol)} mg")
+st.write(f"**Total Sodium:** {format_number(total_sodium)} mg")
+st.write(f"**Total Carbohydrates:** {format_number(total_carbs)} g")
+st.write(f"**Total Dietary Fiber:** {format_number(total_fiber)} g")
+st.write(f"**Total Sugars:** {format_number(total_sugars)} g")
+st.write(f"**Total Protein:** {format_number(total_protein)} g")
