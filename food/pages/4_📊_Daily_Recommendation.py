@@ -90,7 +90,7 @@ def calculate_total_protein(body_weight, weight_goal):
 if st.button("Calculate Recommended Daily Calories"):
     bmr = calculate_bmr(gender, weight, height, age)
     daily_calories = calculate_daily_calories(bmr, activity_level)
-    calculate_caloric_deficit(daily_calories, kg_weight_goal)
+    calculate_caloric_deficit(daily_calories, kg_change_goal)
     calculate_daily_total_fat(daily_calories)
     calculate_daily_saturated_fat(daily_calories)
     calculate_daily_trans_fat(daily_calories)
