@@ -52,3 +52,8 @@ if st.session_state['food_log']:
     st.write(f"**Total Calories Consumed:** {format_number(total_calories_consumed)} kcal")
 else:
     st.info("No food items logged yet.")
+
+if 'nutrition_facts' in st.session_state:
+    nutrition_facts = st.session_state.nutrition_facts
+
+    st.title(Nutrition Facts Summary:)
