@@ -1,23 +1,28 @@
+# app.py
+
 import streamlit as st
-import streamlit.components.v1 as components
 
-# Function to load local CSS file
-def local_css(file_name):
-    with open(file_name) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+# Set page configuration
+st.set_page_config(
+    page_title="Food Nutrition App",
+    page_icon="🍽️",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
-# Load the first CSS file
-local_css("https://raw.githubusercontent.com/ThienAn783/dope/main/index.css")
+# Title and description
+st.title("Welcome to the Food Nutrition App 🍽️")
 
-# Load the second CSS file
-local_css("https://raw.githubusercontent.com/ThienAn783/dope/main/nicepage.css")
+st.write("""
+This app allows you to:
 
-# Load HTML content from the external HTML file (index.html)
-with open("https://raw.githubusercontent.com/ThienAn783/dope/main/index.html", "r", encoding='utf-8') as html_file:
-    html_content = html_file.read()
+- **Analyze food images** to get nutritional information.
+- **Track your calorie intake.**
+- **Get recipe suggestions.**
+- **Calculate your daily calorie recommendations.**
 
-# Use components.html to display the HTML content
-components.html(html_content, height=1200, scrolling=True)
+Use the navigation menu on the left to select a page.
+""")
 
-# Optionally, you can include additional Streamlit elements if needed
-st.write("Streamlit app is working with external HTML and CSS files.")
+# Optional: Display a logo or image
+st.image('logo.png', width=200)  # Ensure 'logo.png' is in the same directory or adjust the path accordingly.
