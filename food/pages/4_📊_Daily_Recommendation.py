@@ -22,6 +22,20 @@ weight_goal = st.selectbox("Select your weight goal:", options=[
     "Maintain current weight",
     "Gain muscle weight"
 ])
+kg_change_goal = st.slider(
+    "Enter how many kg do you want to lose/gain per day:",
+    min_value=0,
+    max_value=0.5,
+    value=0,
+    step=0.1
+)
+
+def calculate_caloric_deficit(daily_calories, weight_goal):
+    if weight_goal == "Lose weight":
+        daily_calories -= 1000 * kg_change_goal
+
+    if weight_goal == "Gain muscle weight":
+        daily_calories += 1000 * kg_change_goal
 
 def calculate_bmr(gender, weight, height, age):
     if gender == "Male":
