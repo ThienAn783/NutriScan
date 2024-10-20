@@ -17,6 +17,8 @@ if not SERPAPI_API_KEY:
 if 'analyzed_foods' in st.session_state and st.session_state['analyzed_foods']:
     # Get all the analyzed food items from Page 1
     food_options = [food['display_name'] for food in st.session_state['analyzed_foods']]
+
+    food_options = list(set(food_options))
     
     # Allow the user to select one or more ingredients to find recipes for
     selected_foods = st.multiselect("Select ingredients to find recipes for:", food_options, default=food_options)
