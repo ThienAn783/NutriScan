@@ -47,6 +47,29 @@ if 'display_name' in st.session_state:
             link = result.get("link")
             if title and link:
                 st.markdown(f"- [{title}]({link})")
+
+    user_input = st.text_input("What else would you like to search about your food?: ", "")
+
+    if user_input:
+        user_message = user_input.lower()
+
+        params = {
+        "q": display_name + user_message,
+        "location": "United States",
+        "hl": "en",
+        "gl": "us",
+        "api_key": "5312ce5c5c97a3ff70fe04fcf1e49d7e38039018892ceec45dbb0798c200137a"
+        }
+
+        search = GoogleSearch(params)
+        results = search.get_dict()
+        for result in results["organic_results"]:
+            title = result["title"]
+            link = result["link"]
+            link_text = title
+            search_url = link
+            st.markdown(f"[{link_text}]({search_url})")
+    
     else:
         st.write("No recipes found.")
 else:
