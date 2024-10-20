@@ -40,38 +40,38 @@ def calculate_daily_calories(bmr, activity_level):
     return bmr * activity_multipliers[activity_level]
 
 def calculate_daily_total_fat(daily_calories):
-    st.write(str((daily_calories * 0.30) / 9) + " g")
+    st.write("Your recommended daily total fat intake: " + str(round((daily_calories * 0.30) / 9, 2)) + " g")
 
 def calculate_daily_saturated_fat(daily_calories):
-    st.write(str((daily_calories * 0.6) / 9 )+ " g")
+    st.write("Your recommended daily saturated fat intake: " + str(round((daily_calories * 0.6) / 9, 2))+ " g")
 
 def calculate_daily_trans_fat(daily_calories):
-    st.write(str((daily_calories * 0.01) / 9) + " g")
+    st.write("Your recommended daily trans fat intake: " + str(round((daily_calories * 0.01) / 9, 2)) + " g")
 
 def calculate_daily_cholesterol():
-    st.write(str(300) + " mg")
+    st.write("Your recommended daily cholesterol intake: " + str(300) + " mg")
 
 def calculate_daily_sodium():
-    st.write(str(2300) + " mg")
+    st.write("Your recommended daily sodium intake: " + str(2300) + " mg")
 
 def calculate_daily_total_carbohydrates(daily_calories):
-    st.write(str((daily_calories * 0.50) / 4) + " mg")
+    st.write("Your recommended daily total carbohydrates intake: " + str(round((daily_calories * 0.50) / 4, 2)) + " mg")
 
 def calculate_dietary_fiber():
-    st.write(str(27.5) + " g")
+    st.write("Your recommended daily dietary fiber intake: " + str(27.5) + " g")
 
 def calculate_total_sugars(daily_calories):
-    st.write(str((daily_calories * 0.05) / 4) + " g")
+    st.write("Your recommended daily total sugars intake: " + str(round((daily_calories * 0.05) / 4, 2)) + " g")
 
 def calculate_total_protein(body_weight, weight_goal):
     if weight_goal == "Lose weight":
-        st.write(str(body_weight * 0.8 )+ " g")
+        st.write("Your recommended daily total protein intake: " + str(round(body_weight * 0.8, 2))+ " g")
     
     if weight_goal == "Maintain current weight":
-        st.write(str(body_weight * 1.0) + " g")
+        st.write("Your recommended daily total protein intake: " + str(round(body_weight * 1.0, 2)) + " g")
 
     if weight_goal == "Gain muscle weight":
-        st.write(str(body_weight * 1.2 ) + " g")
+        st.write("Your recommended daily total protein intake: " + str(round(body_weight * 1.2, 2)) + " g")
 
 if st.button("Calculate Recommended Daily Calories"):
     bmr = calculate_bmr(gender, weight, height, age)
