@@ -24,9 +24,9 @@ weight_goal = st.selectbox("Select your weight goal:", options=[
 ])
 kg_change_goal = st.slider(
     "Enter how many kg do you want to lose/gain per day:",
-    min_value=0,
+    min_value=0.0,
     max_value=0.5,
-    value=0,
+    value=0.0,
     step=0.1
 )
 
@@ -90,6 +90,7 @@ def calculate_total_protein(body_weight, weight_goal):
 if st.button("Calculate Recommended Daily Calories"):
     bmr = calculate_bmr(gender, weight, height, age)
     daily_calories = calculate_daily_calories(bmr, activity_level)
+    calculate_caloric_deficit(daily_calories, kg_weight_goal)
     calculate_daily_total_fat(daily_calories)
     calculate_daily_saturated_fat(daily_calories)
     calculate_daily_trans_fat(daily_calories)
