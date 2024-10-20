@@ -30,12 +30,13 @@ kg_change_goal = st.slider(
     step=0.1
 )
 
-def calculate_caloric_deficit(daily_calories, weight_goal):
-    if weight_goal == "Lose weight":
+def calculate_caloric_deficit(daily_calories, weight_goal, kg_change_goal):
+    if weight_goal == "Lose weight" and kg_change_goal != 0.0:
         daily_calories -= 1000 * kg_change_goal
 
-    if weight_goal == "Gain muscle weight":
+    elif weight_goal == "Gain muscle weight" and kg_change_goal != 0.0:
         daily_calories += 1000 * kg_change_goal
+        
     return daily_calories
 
 def calculate_bmr(gender, weight, height, age):
@@ -91,7 +92,7 @@ def calculate_total_protein(body_weight, weight_goal):
 if st.button("Calculate Recommended Daily Calories"):
     bmr = calculate_bmr(gender, weight, height, age)
     daily_calories = calculate_daily_calories(bmr, activity_level)
-    daily_calories = calculate_caloric_deficit(daily_calories, kg_change_goal)
+    daily_calories = calculate_caloric_deficit(daily_calories, weight_goal, kg_change_goal)
     calculate_daily_total_fat(daily_calories)
     calculate_daily_saturated_fat(daily_calories)
     calculate_daily_trans_fat(daily_calories)
