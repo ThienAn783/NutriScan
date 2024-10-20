@@ -27,7 +27,7 @@ def format_number(value):
         return value
 
 # Access API keys
-API_KEY = 'LkbenMqO.G4m7CrnF9M6UUElgAwTL1Zy8U2ws5I9g'
+API_KEY = 'AONEe36t.5qrwUIOtE6egmKNyOs0gcTSuUAEoMuoF'
 SERPAPI_API_KEY = '5312ce5c5c97a3ff70fe04fcf1e49d7e38039018892ceec45dbb0798c200137a'
 
 if not API_KEY:
