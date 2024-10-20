@@ -30,8 +30,10 @@ def format_number(value):
         return value
 
 # Access API keys
-API_KEY = os.getenv('FOODVISOR_API_KEY')
-SERPAPI_API_KEY = os.getenv('SERPAPI_API_KEY')
+# API_KEY = os.getenv('FOODVISOR_API_KEY')
+# SERPAPI_API_KEY = os.getenv('SERPAPI_API_KEY')
+API_KEY = s4KvFyQy.f1GvtvWfS2WvwpnalDP5zSTnRdG9xH6k
+SERPAPI_API_KEY = 5312ce5c5c97a3ff70fe04fcf1e49d7e38039018892ceec45dbb0798c200137a
 
 if not API_KEY:
     st.error("FOODVISOR_API_KEY environment variable not set.")
