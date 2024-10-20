@@ -6,7 +6,8 @@ import io
 import os
 from dotenv import load_dotenv
 import random
-
+from datetime import datetime
+import json
 # Load environment variables
 load_dotenv()
 
@@ -16,7 +17,34 @@ client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 # Alternatively, if you want to hard-code the API key (not recommended for production):
 # openai.api_key = 'your-openai-api-key'
 
+list_of_ingredients = []
+def update_food_journal(date, name, calorie_sum, protein_sum, fat_sum, cholesterol_sum, sodium_sum, carbs_sum, fiber_sum, sugars_sum):
+    filename = "user.json"
+    if not os.path.exists(filename):
+        with open(filename, 'w') as f:
+            json.dump({}, f)
+    # Load existing data
+    with open(filename, 'r') as f:
+        food_journal = json.load(f)
 
+    # Update the food journal for the specified date
+    if date not in food_journal:
+        food_journal[date] = []
+
+    food_journal[date].append({
+        "mealname": name,
+        "calorie_sum": calorie_sum,
+        "protein_sum": protein_sum,
+        "fat_sum": fat_sum,
+        "cholesterol_sum": cholesterol_sum,
+        "sodium_sum": sodium_sum,
+        "carbs_sum": carbs_sum,
+        "fiber_sum": fiber_sum,
+        "sugars_sum": sugars_sum,
+    })
+    # Save the updated data back to the JSON file
+    with open(filename, 'w') as f:
+        json.dump(food_journal, f, indent=4)
 # Function to generate food nutritional data using ChatGPT
 def format_number(value):
     if value is not None:
@@ -106,6 +134,7 @@ if uploaded_file is not None:
 
         display_name = food_info.get('display_name', 'Unknown')
         st.write(f"Detected food: {display_name}")
+        list_of_ingredients.append(display_name)
 
 else:
     st.info("Please upload an image to start the food analysis.")
@@ -308,3 +337,14 @@ if uploaded_file is not None:
     # Call the total_sum_expander function to display the totals
     total_sum_expander()
     # Final nutritional totals and manual addition functionality has already been included in Part 3
+    mealname = ", ".join(list_of_ingredients)
+    if st.checkbox("Would you like to immediately add today's meal to your journal?"):
+        date = datetime.now()
+        date_string = date.strftime("%Y-%m-%d")
+        update_food_journal(date_string, mealname, calorie_sum, protein_sum, fat_sum, cholesterol_sum, sodium_sum, carbs_sum, fiber_sum, sugars_sum)
+    elif st.checkbox("Would you like to add the meal to a specific day?"):
+        date = st.date_input("Select a date for your food journal", value=None)
+        if date is not None:
+            date_string = date.strftime("%Y-%m-%d")
+            update_food_journal(date_string, mealname, calorie_sum, protein_sum, fat_sum, cholesterol_sum, sodium_sum, carbs_sum, fiber_sum, sugars_sum)
+    
