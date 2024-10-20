@@ -17,6 +17,11 @@ activity_level = st.selectbox("Select your activity level:", options=[
     "Very active (hard exercise/sports 6-7 days a week)",
     "Extra active (very hard exercise/sports & physical job)"
 ])
+weight_goal = st.selectbox("Select your weight goal:", options=[
+    "Lose weight",
+    "Maintain current weight",
+    "Gain muscle weight"
+])
 
 def calculate_bmr(gender, weight, height, age):
     if gender == "Male":
@@ -34,7 +39,50 @@ def calculate_daily_calories(bmr, activity_level):
     }
     return bmr * activity_multipliers[activity_level]
 
+def calculate_daily_total_fat(daily_calories):
+    st.write((daily_calories * 0.30) / 9 + " g")
+
+def calculate_daily_saturated_fat(daily_calories):
+    st.write((daily_calories * 0.6) / 9 + " g")
+
+def calculate_daily_trans_fat(daily_calories):
+    st.write((daily_calories * 0.01) / 9 + " g")
+
+def calculate_daily_cholesterol():
+    st.write(300 + " mg")
+
+def calculate_daily_sodium():
+    st.write(2300 + " mg")
+
+def calculate_daily_total_carbohydrates(daily_calories):
+    st.write((daily_calories * 0.50) / 4 + " mg")
+
+def calculate_dietary_fiber():
+    st.write(27.5 + " g")
+
+def calculate_total_sugars(daily_calories):
+    st.write((daily_calories * 0.05) / 4 + " g")
+
+def calculate_total_protein(body_weight, weight_goal):
+    if weight_goal == "Lose weight":
+        st.write(body_weight * 0.8 + " g")
+    
+    if weight_goal == "Maintain current weight":
+        st.write(body_weight * 1.0 + " g")
+
+    if weight_goal == "Gain muscle weight":
+        st.write(body_weight * 1.2 + " g")
+
 if st.button("Calculate Recommended Daily Calories"):
     bmr = calculate_bmr(gender, weight, height, age)
     daily_calories = calculate_daily_calories(bmr, activity_level)
+    calculate_daily_total_fat(daily_calories)
+    calculate_daily_saturated_fat(daily_calories)
+    calculate_daily_trans_fat(daily_calories)
+    calculate_daily_cholesterol()
+    calculate_daily_sodium()
+    calculate_daily_total_carbohydrates(daily_calories)
+    calculate_daily_dietary_fiber()
+    calculate_daily_total_sugars(daily_calories)
+    calculate_daily_total_protein(weight, weight_goal)
     st.write(f"**Your Recommended Daily Calorie Intake:** {daily_calories:.2f} kcal")
