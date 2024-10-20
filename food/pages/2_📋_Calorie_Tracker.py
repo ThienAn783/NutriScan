@@ -11,49 +11,48 @@ st.set_page_config(
 
 st.title("Calorie Tracker 📋")
 
-# Initialize session state
-if 'food_log' not in st.session_state:
-    st.session_state['food_log'] = []
+# Check if total nutritional sums are available from Page 1
+if 'calorie_sum' in st.session_state:
+    # Retrieve the total nutritional values from session state
+    calorie_sum = st.session_state['calorie_sum']
+    fat_sum = st.session_state['fat_sum']
+    cholesterol_sum = st.session_state['cholesterol_sum']
+    sodium_sum = st.session_state['sodium_sum']
+    carbs_sum = st.session_state['carbs_sum']
+    fiber_sum = st.session_state['fiber_sum']
+    sugars_sum = st.session_state['sugars_sum']
+    protein_sum = st.session_state['protein_sum']
+    vitamin_a_sum = st.session_state['vitamin_a_sum']
+    vitamin_c_sum = st.session_state['vitamin_c_sum']
+    vitamin_d_sum = st.session_state['vitamin_d_sum']
+    vitamin_b12_sum = st.session_state['vitamin_b12_sum']
+    calcium_sum = st.session_state['calcium_sum']
+    iron_sum = st.session_state['iron_sum']
+    potassium_sum = st.session_state['potassium_sum']
 
-# Check if nutrition data is available
-if 'nutrition' in st.session_state and 'display_name' in st.session_state:
-    nutrition = st.session_state['nutrition']
-    display_name = st.session_state['display_name']
+    # Display a summary of the total nutrition for all analyzed foods
+    st.subheader("Total Nutritional Information for the Day")
 
-    # Input for quantity consumed
-    quantity = st.number_input(f"How many grams of {display_name} did you consume?", min_value=0.0, value=100.0)
+    # Display the totals in an expander or directly
+    with st.expander("Nutritional Information", expanded=True):
+        st.write(f"**Total Calories:** {format_number(calorie_sum)} kcal")
+        st.write(f"**Total Fat:** {format_number(fat_sum)} g")
+        st.write(f"**Total Cholesterol:** {format_number(cholesterol_sum)} mg")
+        st.write(f"**Total Sodium:** {format_number(sodium_sum)} mg")
+        st.write(f"**Total Carbohydrates:** {format_number(carbs_sum)} g")
+        st.write(f"**Total Dietary Fiber:** {format_number(fiber_sum)} g")
+        st.write(f"**Total Sugars:** {format_number(sugars_sum)} g")
+        st.write(f"**Total Protein:** {format_number(protein_sum)} g")
+        st.write(f"**Total Vitamin A:** {format_number(vitamin_a_sum)} µg")
+        st.write(f"**Total Vitamin C:** {format_number(vitamin_c_sum)} mg")
+        st.write(f"**Total Vitamin D:** {format_number(vitamin_d_sum)} µg")
+        st.write(f"**Total Vitamin B12:** {format_number(vitamin_b12_sum)} µg")
+        st.write(f"**Total Calcium:** {format_number(calcium_sum)} mg")
+        st.write(f"**Total Iron:** {format_number(iron_sum)} mg")
+        st.write(f"**Total Potassium:** {format_number(potassium_sum)} mg")
 
-    if st.button("Add to Calorie Tracker"):
-        # Calculate total calories based on quantity
-        calories_per_100g = float(nutrition.get('calories_100g', 0))
-        total_calories = (calories_per_100g / 100) * quantity
+    if st.button("Add information to your nutrition log"):
+        st.session_state.nutrition_info = {}
 
-        # Add to food log
-        st.session_state['food_log'].append({
-            'food_name': display_name,
-            'quantity': quantity,
-            'calories': total_calories
-        })
-        st.success(f"Added {quantity}g of {display_name} to your calorie tracker.")
 else:
-    st.info("Please analyze a food item on the 'Food Analysis' page first.")
-
-# Display the food log
-if st.session_state['food_log']:
-    st.subheader("Today's Food Intake")
-    total_calories_consumed = 0
-
-    for idx, entry in enumerate(st.session_state['food_log']):
-        st.write(f"**{idx + 1}. {entry['food_name']}**")
-        st.write(f"- Quantity: {entry['quantity']} g")
-        st.write(f"- Calories: {format_number(entry['calories'])} kcal")
-        total_calories_consumed += entry['calories']
-
-    st.write(f"**Total Calories Consumed:** {format_number(total_calories_consumed)} kcal")
-else:
-    st.info("No food items logged yet.")
-
-if 'nutrition_facts' in st.session_state:
-    nutrition_facts = st.session_state.nutrition_facts
-
-    st.title(Nutrition Facts Summary:)
+    st.info("Please analyze food items on the 'Food Analysis' page first.")
