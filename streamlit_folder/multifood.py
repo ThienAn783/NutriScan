@@ -2,7 +2,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 import requests 
-#Georges
+#Georges Gewargis
 def format_number(value):
     if value is not None:
         formatted = f"{value:.10f}"
