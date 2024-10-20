@@ -6,13 +6,54 @@ import io
 import os
 from dotenv import load_dotenv
 import random
-
+from datetime import datetime
+import json
 
 load_dotenv()
+list_of_ingredients = []
+import json
+import os
+
+def update_food_journal(date, name, calorie_sum, protein_sum, fat_sum, cholesterol_sum, sodium_sum, carbs_sum, fiber_sum, sugars_sum):
+    filename = "user.json"
+
+    # If the file doesn't exist or is empty, initialize it with an empty dictionary
+    if not os.path.exists(filename) or os.path.getsize(filename) == 0:
+        with open(filename, 'w') as f:
+            json.dump({}, f)
+
+    # Load existing data
+    with open(filename, 'r') as f:
+        try:
+            food_journal = json.load(f)
+        except json.JSONDecodeError:
+            # If file contains invalid JSON, initialize an empty dictionary
+            food_journal = {}
+
+    # Update the food journal for the specified date
+    if date not in food_journal:
+        food_journal[date] = []
+
+    food_journal[date].append({
+        "mealname": name,
+        "calorie_sum": calorie_sum,
+        "protein_sum": protein_sum,
+        "fat_sum": fat_sum,
+        "cholesterol_sum": cholesterol_sum,
+        "sodium_sum": sodium_sum,
+        "carbs_sum": carbs_sum,
+        "fiber_sum": fiber_sum,
+        "sugars_sum": sugars_sum,
+    })
+
+    # Save the updated data back to the JSON file
+    with open(filename, 'w') as f:
+        json.dump(food_journal, f, indent=4)
 
 
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
-
+if 'analyzed_foods' not in st.session_state:
+    st.session_state['analyzed_foods'] = []
 if 'meals' not in st.session_state:
     st.session_state['meals'] = []
 def format_number(value):
@@ -143,7 +184,7 @@ def display_and_choose_food_option(item, i):
             if food['food_info']['display_name'] == selected_option
         )
         food_info = selected_food['food_info']
-    
+        list_of_ingredients.append(food_info['display_name'])
     # Extract and display the nutritional data for the selected food
     nutrition = food_info['nutrition']
     st.markdown(f"**Ingredient {i+1}: {food_info['display_name']}**")
@@ -223,6 +264,7 @@ if uploaded_file is not None:
 
 
     st.session_state['meals'].append(new_meal)
+    st.session_state['analyzed_foods'].append(food_info)
     st.markdown('<span style="font-size: 24px;">Total Nutritional Information for Meal</span>', unsafe_allow_html=True)
 
 def total_sum_expander():
@@ -341,3 +383,14 @@ if uploaded_file is not None:
 
 
     total_sum_expander()
+    
+    mealname = ", ".join(list_of_ingredients)
+    if st.checkbox("Would you like to immediately add today's meal to your journal?"):
+        date = datetime.now()
+        date_string = date.strftime("%Y-%m-%d")
+        update_food_journal(date_string, mealname, calorie_sum, protein_sum, fat_sum, cholesterol_sum, sodium_sum, carbs_sum, fiber_sum, sugars_sum)
+    elif st.checkbox("Would you like to add the meal to a specific day?"):
+        date = st.date_input("Select a date for your food journal", value=None)
+        if date is not None:
+            date_string = date.strftime("%Y-%m-%d")
+            update_food_journal(date_string, mealname, calorie_sum, protein_sum, fat_sum, cholesterol_sum, sodium_sum, carbs_sum, fiber_sum, sugars_sum)
