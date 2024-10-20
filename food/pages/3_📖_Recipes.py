@@ -81,6 +81,43 @@ if 'display_name' in st.session_state:
             link = result.get("link")
             if title and link:
                 st.markdown(f"- [{title}]({link})")
+
+    food_allergies = st.multiselect(
+        "Do you have any food allergies? (Select all that apply)",
+        options=["Nuts", "Dairy", "Gluten", "Eggs", "Shellfish", "Soy", "Wheat", "None"],
+    )
+
+    allergies = ""
+    for allergy in food_allergies:
+        allergies += allergy
+
+    params = {
+    "q": "Recipes without " + allergies,
+    "location": "United States",
+    "hl": "en",
+    "gl": "us",
+    "api_key": SERPAPI_API_KEY
+    }
+
+    response = requests.get('https://serpapi.com/search', params=params)
+    try:
+        response.raise_for_status()
+        results = response.json()
+    except requests.exceptions.HTTPError as http_err:
+        st.error(f"HTTP error occurred: {http_err}")
+        st.write(response.text)
+        st.stop()
+    except Exception as err:
+        st.error(f"An error occurred: {err}")
+        st.stop()
+
+    # Display recipe links
+    if "organic_results" in results:
+        for result in results["organic_results"][:5]:
+            title = result.get("title")
+            link = result.get("link")
+            if title and link:
+                st.markdown(f"- [{title}]({link})")
     
     else:
         st.write("No recipes found.")
