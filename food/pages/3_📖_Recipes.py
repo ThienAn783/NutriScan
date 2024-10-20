@@ -58,7 +58,7 @@ if 'display_name' in st.session_state:
         "location": "United States",
         "hl": "en",
         "gl": "us",
-        "api_key": "5312ce5c5c97a3ff70fe04fcf1e49d7e38039018892ceec45dbb0798c200137a"
+        "api_key": SERPAPI_API_KEY
         }
 
         response = requests.get('https://serpapi.com/search', params=params)
