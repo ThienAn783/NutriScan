@@ -12,6 +12,7 @@ load_dotenv()
 
 # Set your OpenAI API key (replace with your own API key)
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+
 # Alternatively, if you want to hard-code the API key (not recommended for production):
 # openai.api_key = 'your-openai-api-key'
 
@@ -39,6 +40,7 @@ if not SERPAPI_API_KEY:
 # File uploader for the user to upload an image
 uploaded_file = st.file_uploader("Upload an image of your food", type=["jpg", "jpeg", "png"])
 
+# Ensure this block only runs if the user has uploaded an image
 if uploaded_file is not None:
     # Read the image file
     image_bytes = uploaded_file.read()
@@ -64,9 +66,10 @@ if uploaded_file is not None:
         "image": (filename, image_bytes, mime_type)
     }
 
+    # Try sending the request and processing the response
     with st.spinner('Analyzing image...'):
-        response = requests.post(url, headers=headers, files=files)
         try:
+            response = requests.post(url, headers=headers, files=files)
             response.raise_for_status()
             data = response.json()
         except requests.exceptions.HTTPError as http_err:
@@ -77,13 +80,36 @@ if uploaded_file is not None:
             st.error(f"An error occurred: {err}")
             st.stop()
 
-    # Check if any items were detected
-    items = data.get('items')
+    st.success('Analysis complete!')
+
+    # Check if 'items' is present in the API response and define 'items'
+    items = data.get('items', None)
+
+    # Ensure 'items' is not None and contains data
     if not items:
         st.error("No food items detected in the image.")
         st.stop()
 
-    st.success('Analysis complete!')
+    # Only process 'items' if it's properly defined
+    for i, item in enumerate(items):
+        # Check if item contains a list of foods
+        food_list = item.get('food', [])
+        if not food_list:
+            st.write(f"Item {i + 1}: No foods detected.")
+            continue
+
+        # Process the first food item in the list (or handle multiple if necessary)
+        food_info = food_list[0].get('food_info', {})
+        if not food_info:
+            st.write(f"Item {i + 1}: No food information available.")
+            continue
+
+        display_name = food_info.get('display_name', 'Unknown')
+        st.write(f"Detected food: {display_name}")
+
+else:
+    st.info("Please upload an image to start the food analysis.")
+
 # Function 1: Allow the user to choose between detected food items
 def display_and_choose_food_option(item, i):
     food_options = [food['food_info']['display_name'] for food in item['food']]
@@ -133,32 +159,33 @@ calcium_sum = 0
 iron_sum = 0
 potassium_sum = 0
 
-# Loop through each detected item and allow the user to choose the correct one
-for i, item in enumerate(items):
-    food_info = display_and_choose_food_option(item, i)  # Let the user choose the correct food
-    display_name = food_info['display_name']
-    nutrition = food_info['nutrition']
+if uploaded_file is not None:
+    # Loop through each detected item and allow the user to choose the correct one
+    for i, item in enumerate(items):
+        food_info = display_and_choose_food_option(item, i)  # Let the user choose the correct food
+        display_name = food_info['display_name']
+        nutrition = food_info['nutrition']
 
-    # Accumulate nutritional values
-    calorie_sum += (nutrition.get('calories_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('calories_100g') is not None else 0
-    fat_sum += (nutrition.get('fat_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('fat_100g') is not None else 0
-    cholesterol_sum += (nutrition.get('cholesterol_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('cholesterol_100g') is not None else 0
-    sodium_sum += (nutrition.get('sodium_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('sodium_100g') is not None else 0
-    carbs_sum += (nutrition.get('carbs_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('carbs_100g') is not None else 0
-    fiber_sum += (nutrition.get('fibers_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('fibers_100g') is not None else 0
-    sugars_sum += (nutrition.get('sugars_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('sugars_100g') is not None else 0
-    protein_sum += (nutrition.get('proteins_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('proteins_100g') is not None else 0
+        # Accumulate nutritional values
+        calorie_sum += (nutrition.get('calories_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('calories_100g') is not None else 0
+        fat_sum += (nutrition.get('fat_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('fat_100g') is not None else 0
+        cholesterol_sum += (nutrition.get('cholesterol_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('cholesterol_100g') is not None else 0
+        sodium_sum += (nutrition.get('sodium_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('sodium_100g') is not None else 0
+        carbs_sum += (nutrition.get('carbs_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('carbs_100g') is not None else 0
+        fiber_sum += (nutrition.get('fibers_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('fibers_100g') is not None else 0
+        sugars_sum += (nutrition.get('sugars_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('sugars_100g') is not None else 0
+        protein_sum += (nutrition.get('proteins_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('proteins_100g') is not None else 0
 
-    vitamin_a_sum += (nutrition.get('vitamin_a_retinol_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('vitamin_a_retinol_100g') is not None else 0
-    vitamin_c_sum += (nutrition.get('vitamin_c_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('vitamin_c_100g') is not None else 0
-    vitamin_d_sum += (nutrition.get('vitamin_d_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('vitamin_d_100g') is not None else 0
-    vitamin_b12_sum += (nutrition.get('vitamin_b12_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('vitamin_b12_100g') is not None else 0
+        vitamin_a_sum += (nutrition.get('vitamin_a_retinol_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('vitamin_a_retinol_100g') is not None else 0
+        vitamin_c_sum += (nutrition.get('vitamin_c_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('vitamin_c_100g') is not None else 0
+        vitamin_d_sum += (nutrition.get('vitamin_d_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('vitamin_d_100g') is not None else 0
+        vitamin_b12_sum += (nutrition.get('vitamin_b12_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('vitamin_b12_100g') is not None else 0
 
-    calcium_sum += (nutrition.get('calcium_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('calcium_100g') is not None else 0
-    iron_sum += (nutrition.get('iron_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('iron_100g') is not None else 0
-    potassium_sum += (nutrition.get('potassium_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('potassium_100g') is not None else 0
+        calcium_sum += (nutrition.get('calcium_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('calcium_100g') is not None else 0
+        iron_sum += (nutrition.get('iron_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('iron_100g') is not None else 0
+        potassium_sum += (nutrition.get('potassium_100g', 0) / 100 * food_info.get('g_per_serving', 0)) if nutrition.get('potassium_100g') is not None else 0
 
-st.markdown('<span style="font-size: 24px;">Total Nutritional Information for Meal</span>', unsafe_allow_html=True)
+    st.markdown('<span style="font-size: 24px;">Total Nutritional Information for Meal</span>', unsafe_allow_html=True)
 # Display the detailed nutritional information in an expandable section
 # Function to add manual food using ChatGPT API to fetch nutritional data
 def total_sum_expander():
@@ -178,7 +205,6 @@ def total_sum_expander():
         st.write(f"**Total Calcium:** {format_number(calcium_sum)} mg")
         st.write(f"**Total Iron:** {format_number(iron_sum)} mg")
         st.write(f"**Total Potassium:** {format_number(potassium_sum)} mg")
-import random
 
 # Simulated API (ChatGPT) to generate nutritional data for a given food
 def generate_nutritional_data(food_name):
@@ -258,49 +284,27 @@ def add_manual_food_optional():
                     # Re-display the total nutritional information for the entire meal
                     total_sum_expander()
 
-# Call the function to manually add food (optional)
-add_manual_food_optional()
-# Call the function to manually add food and sum up the nutritional values
-total_sum_expander()
-# Function to search for more information about the selected food using SerpAPI
-def search_user_input():
-    st.markdown("<span style='font-size: 24px;'>Search for More Information</span>", unsafe_allow_html=True)
-    user_input = st.text_input("What would you like to know about this food?", "")
+if uploaded_file is not None:
+    # Call the function to manually add food (optional)
+    add_manual_food_optional()
 
-    if user_input:
-        query = display_name + " " + user_input
+    # Store total nutritional values in session state
+    st.session_state['calorie_sum'] = calorie_sum
+    st.session_state['fat_sum'] = fat_sum
+    st.session_state['cholesterol_sum'] = cholesterol_sum
+    st.session_state['sodium_sum'] = sodium_sum
+    st.session_state['carbs_sum'] = carbs_sum
+    st.session_state['fiber_sum'] = fiber_sum
+    st.session_state['sugars_sum'] = sugars_sum
+    st.session_state['protein_sum'] = protein_sum
+    st.session_state['vitamin_a_sum'] = vitamin_a_sum
+    st.session_state['vitamin_c_sum'] = vitamin_c_sum
+    st.session_state['vitamin_d_sum'] = vitamin_d_sum
+    st.session_state['vitamin_b12_sum'] = vitamin_b12_sum
+    st.session_state['calcium_sum'] = calcium_sum
+    st.session_state['iron_sum'] = iron_sum
+    st.session_state['potassium_sum'] = potassium_sum
 
-        params = {
-            "q": query,
-            "location": "United States",
-            "hl": "en",
-            "gl": "us",
-            "api_key": SERPAPI_API_KEY
-        }
-
-        response = requests.get('https://serpapi.com/search', params=params)
-        try:
-            response.raise_for_status()
-            results = response.json()
-        except requests.exceptions.HTTPError as http_err:
-            st.error(f"HTTP error occurred: {http_err}")
-            st.write(response.text)
-            return
-        except Exception as err:
-            st.error(f"An error occurred: {err}")
-            return
-
-        if "organic_results" in results:
-            st.markdown("<h3>Search Results</h3>", unsafe_allow_html=True)
-            for result in results["organic_results"]:
-                title = result.get("title")
-                link = result.get("link")
-                if title and link:
-                    st.markdown(f"[{title}]({link})")
-        else:
-            st.write("No results found.")
-
-# Display the option to search for more information about the selected food
-search_user_input()
-
-# Final nutritional totals and manual addition functionality has already been included in Part 3
+    # Call the total_sum_expander function to display the totals
+    total_sum_expander()
+    # Final nutritional totals and manual addition functionality has already been included in Part 3
