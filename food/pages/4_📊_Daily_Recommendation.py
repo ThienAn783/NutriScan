@@ -30,8 +30,6 @@ kg_change_goal = st.slider(
     step=0.1
 )
 
-st.session_state.nutrition_facts = {}
-
 def calculate_caloric_deficit(daily_calories, weight_goal, kg_change_goal):
     if weight_goal == "Lose weight" and kg_change_goal != 0.0:
         daily_calories -= 1000 * kg_change_goal
@@ -58,60 +56,38 @@ def calculate_daily_calories(bmr, activity_level):
     return bmr * activity_multipliers[activity_level]
 
 def calculate_daily_total_fat(daily_calories):
-    total_fat = round((daily_calories * 0.30) / 9, 2)
-    st.write("Your recommended daily total fat intake: " + str(total_fat) + " g")
-    st.session_state.nutrition_facts['Total Fat'] = total_fat
+    st.write("Your recommended daily total fat intake: " + str(round((daily_calories * 0.30) / 9, 2)) + " g")
 
 def calculate_daily_saturated_fat(daily_calories):
-    saturated_fat = round((daily_calories * 0.6) / 9, 2)
-    st.write("Your recommended daily saturated fat intake: " + str(saturated_fat)+ " g")
-    st.session_state.nutrition_facts['Saturated Fat'] = saturated_fat
+    st.write("Your recommended daily saturated fat intake: " + str(round((daily_calories * 0.6) / 9, 2))+ " g")
 
 def calculate_daily_trans_fat(daily_calories):
-    total_fat = round((daily_calories * 0.01) / 9, 2)
-    st.write("Your recommended daily trans fat intake: " + str(total_fat) + " g")
-    st.session_state.nutrition_facts['Total Fat'] = total_fat
+    st.write("Your recommended daily trans fat intake: " + str(round((daily_calories * 0.01) / 9, 2)) + " g")
 
 def calculate_daily_cholesterol():
-    cholesterol = 300
-    st.write("Your recommended daily cholesterol intake: " + str(cholesterol) + " mg")
-    st.session_state.nutrition_facts['Cholesterol'] = cholesterol
+    st.write("Your recommended daily cholesterol intake: " + str(300) + " mg")
 
 def calculate_daily_sodium():
-    sodium = 2300
-    st.write("Your recommended daily sodium intake: " + str(sodium) + " mg")
-    st.session_state.nutrition_facts['Sodium'] = sodium
+    st.write("Your recommended daily sodium intake: " + str(2300) + " mg")
 
 def calculate_daily_total_carbohydrates(daily_calories):
-    carbs = round((daily_calories * 0.50) / 4, 2)
-    st.write("Your recommended daily total carbohydrates intake: " + str(carbs) + " mg")
-    st.session_state.nutrition_facts['Carbs'] = carbs
+    st.write("Your recommended daily total carbohydrates intake: " + str(round((daily_calories * 0.50) / 4, 2)) + " mg")
 
 def calculate_dietary_fiber():
-    dietary_fiber = 27.5
-    st.write("Your recommended daily dietary fiber intake: " + str(dietary_fiber) + " g")
-    st.session_state.nutrition_facts['Dietary Fiber'] = dietary_fiber
+    st.write("Your recommended daily dietary fiber intake: " + str(27.5) + " g")
 
 def calculate_total_sugars(daily_calories):
-    sugars = round((daily_calories * 0.05) / 4, 2)
-    st.write("Your recommended daily total sugars intake: " + str(sugars) + " g")
-    st.session_state.nutrition_facts['Sugars'] = sugars
+    st.write("Your recommended daily total sugars intake: " + str(round((daily_calories * 0.05) / 4, 2)) + " g")
 
 def calculate_total_protein(body_weight, weight_goal):
     if weight_goal == "Lose weight":
-        protein = round(body_weight * 0.8, 2)
-        st.write("Your recommended daily total protein intake: " + str(protein)+ " g")
-        st.session_state.nutrition_facts['Protein'] = protein
+        st.write("Your recommended daily total protein intake: " + str(round(body_weight * 0.8, 2))+ " g")
     
     if weight_goal == "Maintain current weight":
-        protein = round(body_weight * 1.0, 2)
-        st.write("Your recommended daily total protein intake: " + str(protein) + " g")
-        st.session_state.nutrition_facts['Protein'] = protein
+        st.write("Your recommended daily total protein intake: " + str(round(body_weight * 1.0, 2)) + " g")
 
     if weight_goal == "Gain muscle weight":
-        protein = round(body_weight * 1.2, 2)
-        st.write("Your recommended daily total protein intake: " + str(protein) + " g")
-        st.session_state.nutrition_facts['Protein'] = protein
+        st.write("Your recommended daily total protein intake: " + str(round(body_weight * 1.2, 2)) + " g")
 
 if st.button("Calculate Recommended Daily Calories"):
     bmr = calculate_bmr(gender, weight, height, age)
