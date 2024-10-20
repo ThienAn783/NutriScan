@@ -28,7 +28,7 @@ def total_sum_expander():
         st.write(f"**Total Calcium:** {format_number(calcium_sum)} mg")
         st.write(f"**Total Iron:** {format_number(iron_sum)} mg")
         st.write(f"**Total Potassium:** {format_number(potassium_sum)} mg")
-
+#variable initializations
 calorie_sum = 0
 fat_sum = 0
 cholesterol_sum = 0
