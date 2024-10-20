@@ -1,66 +1,23 @@
 import streamlit as st
+import streamlit.components.v1 as components
 
-# Set page configuration
-st.set_page_config(
-    page_title="Food Nutrition App",
-    page_icon="🍽️",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+# Function to load local CSS file
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# Load CSS from external file
-with open('style.css') as f:
-    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-# --- CSS Styling ---
-st.markdown(
-    """
-    <style>
-    .main-header {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #282c34; /* Dark grey */
-        text-align: center;
-    }
-    .main-description {
-        font-family: 'Open Sans', sans-serif;
-        color: #444;
-        text-align: center;
-        line-height: 1.6;
-        margin-top: -20px; /* Adjust spacing */
-    }
-    .feature-list {
-        text-align: center;
-        list-style-type: none;
-        padding: 0;
-    }
-    .feature-list li {
-        display: inline-block;
-        margin: 0 15px;
-        font-family: 'Source Sans Pro', sans-serif;
-        color: #333;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-# --- End CSS Styling ---
+# Load the first CSS file
+local_css("https://raw.githubusercontent.com/ThienAn783/dope/main/index.css")
 
-# Display logo
-st.image('logo.png', width=200)
+# Load the second CSS file
+local_css("https://raw.githubusercontent.com/ThienAn783/dope/main/nicepage.css")
 
-# Title and description with CSS classes
-st.markdown('<h1 class="main-header">Welcome to the Food Nutrition App 🍽️</h1>', unsafe_allow_html=True)
-st.markdown(
-    """
-    <p class="main-description">
-    This app allows you to:
-    <ul class="feature-list">
-        <li>- <b>Analyze food images</b> to get nutritional information.</li>
-        <li>- <b>Track your calorie intake.</b></li>
-        <li>- <b>Get recipe suggestions.</b></li>
-        <li>- <b>Calculate your daily calorie recommendations.</b></li>
-    </ul>
-    Use the navigation menu on the left to select a page.
-    </p>
-    """,
-    unsafe_allow_html=True,
-)
+# Load HTML content from the external HTML file (index.html)
+with open("https://raw.githubusercontent.com/ThienAn783/dope/main/index.html", "r", encoding='utf-8') as html_file:
+    html_content = html_file.read()
+
+# Use components.html to display the HTML content
+components.html(html_content, height=1200, scrolling=True)
+
+# Optionally, you can include additional Streamlit elements if needed
+st.write("Streamlit app is working with external HTML and CSS files.")
