@@ -25,4 +25,4 @@ Use the navigation menu on the left to select a page.
 """)
 
 # Optional: Display a logo or image
-st.image('logo.png', width=200)  # Ensure 'logo.png' is in the same directory or adjust the path accordingly.
+st.image('https://github.com/LuisMorelos/Washu-Hack-Food-Information-Website/blob/main/NutriScan/logo.png', width=200)  # Ensure 'logo.png' is in the same directory or adjust the path accordingly.
