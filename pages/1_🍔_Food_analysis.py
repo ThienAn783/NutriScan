@@ -113,9 +113,8 @@ def format_number(value):
     else:
         value = '0'
         return value
-
-API_KEY = 'AONEe36t.5qrwUIOtE6egmKNyOs0gcTSuUAEoMuoF'
-SERPAPI_API_KEY = '240c4ac43f2e5f5f73ddf6aee4a8292a53f6c8caca5dab0cf45cc9df89ca1b91'
+API_KEY = st.secrets["api_credentials"]["API_KEY"]
+SERPAPI_API_KEY = st.secrets["api_credentials"]["SERPAPI_API_KEY"]
 api_key = st.secrets["api_credentials"]["OPENAI_API_KEY"]
 client = OpenAI(api_key=api_key)
 if not API_KEY:
