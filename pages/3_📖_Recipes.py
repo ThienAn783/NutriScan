@@ -3,9 +3,7 @@ import requests
 import os
 
 st.title("Recipes 📖")
-
-SERPAPI_API_KEY = '240c4ac43f2e5f5f73ddf6aee4a8292a53f6c8caca5dab0cf45cc9df89ca1b91'
-
+SERPAPI_API_KEY = st.secrets["api_credentials"]["SERPAPI_API_KEY"]
 if not SERPAPI_API_KEY:
     st.error("SERPAPI_API_KEY environment variable not set.")
     st.stop()
