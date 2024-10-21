@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(
     page_title="NutriScan",
-    page_icon="https://raw.githubusercontent.com/ThienAn783/NutriScan/main/NutriScan/logo.png",
+    page_icon="https://raw.githubusercontent.com/ThienAn783/NutriScan/main/logo.png",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -52,5 +52,5 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 st.markdown("""
-    <img src="https://raw.githubusercontent.com/ThienAn783/NutriScan/main/NutriScan/logo.png" alt="NutriScan Logo" class="logo" width="500">
+    <img src="https://raw.githubusercontent.com/ThienAn783/NutriScan/main/logo.png" alt="NutriScan Logo" class="logo" width="500">
 """, unsafe_allow_html=True)
