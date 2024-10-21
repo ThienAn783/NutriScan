@@ -1,9 +1,10 @@
-# .streamlit/config.toml
-
+[server]
+headless = true
+port = $PORT
+enableCORS = false
 [theme]
-primaryColor = "#FF69B4"             # Hot Pink
-backgroundColor = "#FFFFFF"          # White
-secondaryBackgroundColor = "#FFB6C1" # Light Pink
-textColor = "#4B0082"                # Indigo
+primaryColor = "#FF69B4"             
+backgroundColor = "#FFFFFF"          
+secondaryBackgroundColor = "#FFB6C1" 
+textColor = "#4B0082"                
 font = "monospace"
-fontSize = 16
