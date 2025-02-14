@@ -10,12 +10,12 @@
 - **Daily Calorie Recommendations:** Calculate your recommended daily calorie intake based on your age, gender, weight, height, and activity level.
 - **Interactive Calendar:** View your calorie intake and progress in a visual format with an interactive calendar.
 
-## Technologies
+## Techn Stack
 
-Frontend: Streamlit
-Backend: Python, OpenAI API, Foodvisor API, SerpAPI
-Database: JSON storage for user data
-Libraries: Pandas, PIL, Requests, dotenv, Streamlit-Calendar
+- **Frontend:** Streamlit  
+- **Backend:** Python, OpenAI API, Foodvisor API, SerpAPI  
+- **Database:** JSON storage for user data  
+- **Libraries:** Pandas, PIL, Requests, dotenv, Streamlit-Calendar  
 
 ## Installation
 
