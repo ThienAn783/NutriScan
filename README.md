@@ -12,10 +12,10 @@
 
 ## Technologies
 
-- **Streamlit:** Used as the framework for building the web app.
-- **Python (OpenAI, Foodvisor, SERP APIs):** For handling image analysis, generating insights, and providing recipe recommendations.
-- **SQL:** For database management to store and retrieve user data.
-- **Pandas:** For data manipulation and analysis.
+Frontend: Streamlit
+Backend: Python, OpenAI API, Foodvisor API, SerpAPI
+Database: JSON storage for user data
+Libraries: Pandas, PIL, Requests, dotenv, Streamlit-Calendar
 
 ## Installation
 
